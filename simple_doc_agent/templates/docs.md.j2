@@ -1,0 +1,99 @@
+# {{ python.project_name }}
+
+_Auto-generated documentation (generated on {{ generated_at }})_
+
+---
+
+## 🛡️ Security Audit
+{% if security_findings %}
+> [!WARNING]
+> Potential security risks detected in configuration files.
+
+{% for finding in security_findings if finding.vulnerabilities %}
+### 📄 `{{ finding.filename }}`
+
+| Type | Item | Risk Level | Details |
+| :--- | :--- | :--- | :--- |
+{% for vuln in finding.vulnerabilities %}
+| **{{ vuln.type }}** | `{{ vuln.item }}` | {{ "🔴" if vuln.risk == "CRITICAL" else "🟡" }} {{ vuln.risk }} | {{ vuln.reason or vuln.val_preview }} |
+{% endfor %}
+
+{% endfor %}
+{% else %}
+✅ No immediate security risks (hardcoded secrets or insecure ports) detected.
+{% endif %}
+
+---
+---
+
+## Overview
+
+- **Type:** Python Application
+- **Python Version:** {{ python.python_version }}
+
+---
+
+## Dependencies
+
+| Package | Version |
+|--------|---------|
+{% for dep in python.dependencies %}
+| {{ dep.name }} | {{ dep.version }} |
+{% endfor %}
+
+---
+
+## Python Code
+{% for file, docs in python.docstrings.items() %}
+### File: {{ file }}
+
+{% for doc in docs %}
+#### {{ doc.type }} {{ doc.name or "" }}
+
+{{ doc.doc }}
+
+{% endfor %}
+{% endfor %}
+
+---
+
+## CI/CD
+
+{% if cicd.global_variables %}
+### Global Variables
+{% for key, value in cicd.global_variables.items() %}
+- **{{ key }}**: {{ value }}
+{% endfor %}
+{% endif %}
+
+{% if cicd.jobs %}
+### Jobs
+{% for job in cicd.jobs %}
+- **{{ job.name }}**
+  - Stage: {{ job.stage }}
+  - Image: {{ job.image or "-" }}
+  - Runs: {{ job.when }}
+{% endfor %}
+{% endif %}
+
+---
+
+## Docker
+{% for docker_file in docker %}
+### Dockerfile: {{ docker_file.filename }}
+{% for key, value in docker_file.items() %}
+- **{{ key.replace('_',' ').title() }}:** {{ value }}
+{% endfor %}
+{% endfor %}
+
+---
+
+## Architecture Diagram
+
+```mermaid
+{{ mermaid}}
+
+## Test Coverage
+
+```testcoverage
+{{ test_coverage}}

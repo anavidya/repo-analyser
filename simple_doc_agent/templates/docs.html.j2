@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{{ python.project_name }} Documentation</title>
+<link rel="stylesheet" href="../styles/docs.css">
+
+</head>
+<body>
+
+<h1>{{ python.project_name }}</h1>
+<p><em>Auto-generated documentation (generated on  <span id="generated-at"></span>)</em></p>
+
+<div class="tabs">
+  <button class="tablinks" onclick="openTab(event, 'Overview')">Overview</button>
+  <button class="tablinks" onclick="openTab(event, 'PythonCode')">Python Code</button>
+  <button class="tablinks" onclick="openTab(event, 'CI_CD')">CI/CD</button>
+  <button class="tablinks" onclick="openTab(event, 'Docker')">Docker</button>
+  <button class="tablinks" onclick="openTab(event, 'Mermaid')">Diagrams</button>
+  <button class="tablinks" onclick="openTab(event, 'Security')">Security</button>
+  <button class="tablinks" onclick="openTab(event, 'Test_Coverage')">Test Coverage</button>
+  <button class="tablinks" onclick="openTab(event, 'Code_Review')">Code Review</button>
+</div>
+
+<div id="Code_Review" class="tabcontent">
+  <h2>Code Review Summary</h2>
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label">Files Analyzed</div>
+      <div class="metric-value">{{ review_results.metrics.files_analyzed }}</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Total Issues</div>
+      <div class="metric-value">{{ review_results.total_issues }}</div>
+    </div>
+    <div class="metric-card metric-critical">
+      <div class="metric-label">Critical</div>
+      <div class="metric-value">{{ review_results.metrics.by_severity.critical }}</div>
+    </div>
+    <div class="metric-card metric-high">
+      <div class="metric-label">High</div>
+      <div class="metric-value">{{ review_results.metrics.by_severity.high }}</div>
+    </div>
+    <div class="metric-card metric-medium">
+      <div class="metric-label">Medium</div>
+      <div class="metric-value">{{ review_results.metrics.by_severity.medium }}</div>
+    </div>
+    <div class="metric-card metric-low">
+      <div class="metric-label">Low</div>
+      <div class="metric-value">{{ review_results.metrics.by_severity.low }}</div>
+    </div>
+  </div>
+
+  {% if review_results.total_issues == 0 %}
+    <p class="no-issues">✅ No issues found! Code looks clean.</p>
+  {% else %}
+
+    <!-- Critical Issues -->
+    {% if review_results.critical %}
+    <h3 class="issues-heading issues-critical">🔴 Critical Issues ({{ review_results.critical|length }})</h3>
+    <table class="issues-table">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>File</th>
+          <th>Line</th>
+          <th>Code</th>
+          <th>Message</th>
+          <th>Tool</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for issue in review_results.critical %}
+        <tr>
+          <td>{{ issue.category }}</td>
+          <td><code>{{ issue.file }}</code></td>
+          <td>{{ issue.line if issue.line else '—' }}</td>
+          <td><code>{{ issue.code }}</code></td>
+          <td>{{ issue.message }}</td>
+          <td><code>{{ issue.tool }}</code></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    <!-- High Issues -->
+    {% if review_results.high %}
+    <h3 class="issues-heading issues-high">🟠 High Priority Issues ({{ review_results.high|length }})</h3>
+    <table class="issues-table">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>File</th>
+          <th>Line</th>
+          <th>Code</th>
+          <th>Message</th>
+          <th>Tool</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for issue in review_results.high %}
+        <tr>
+          <td>{{ issue.category }}</td>
+          <td><code>{{ issue.file }}</code></td>
+          <td>{{ issue.line if issue.line else '—' }}</td>
+          <td><code>{{ issue.code }}</code></td>
+          <td>{{ issue.message }}</td>
+          <td><code>{{ issue.tool }}</code></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    <!-- Medium Issues -->
+    {% if review_results.medium %}
+    <h3 class="issues-heading issues-medium">🟡 Medium Priority Issues ({{ review_results.medium|length }})</h3>
+    <table class="issues-table">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>File</th>
+          <th>Line</th>
+          <th>Code</th>
+          <th>Message</th>
+          <th>Tool</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for issue in review_results.medium %}
+        <tr>
+          <td>{{ issue.category }}</td>
+          <td><code>{{ issue.file }}</code></td>
+          <td>{{ issue.line if issue.line else '—' }}</td>
+          <td><code>{{ issue.code }}</code></td>
+          <td>{{ issue.message }}</td>
+          <td><code>{{ issue.tool }}</code></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    <!-- Low Issues -->
+    {% if review_results.low %}
+    <h3 class="issues-heading issues-low">⚪ Low Priority Issues ({{ review_results.low|length }})</h3>
+    <table class="issues-table">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>File</th>
+          <th>Line</th>
+          <th>Code</th>
+          <th>Message</th>
+          <th>Tool</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for issue in review_results.low %}
+        <tr>
+          <td>{{ issue.category }}</td>
+          <td><code>{{ issue.file }}</code></td>
+          <td>{{ issue.line if issue.line else '—' }}</td>
+          <td><code>{{ issue.code }}</code></td>
+          <td>{{ issue.message }}</td>
+          <td><code>{{ issue.tool }}</code></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+  {% endif %}
+</div>
+
+
+<div id="Test_Coverage" class="tabcontent">
+  <h2>Total Coverage: {{ test_coverage.summary_coverage }}</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>File</th>
+        <th>Coverage</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in test_coverage.test_coverage %}
+      <tr>
+        <td><code>{{ item.name }}</code></td>
+        <td style="font-weight: bold; {{ 'color: red;' if item.line_rate < 50 else 'color: inherit;' }}">
+          {{ item.line_rate }}%
+        </td>
+        <td>
+          {% if item.line_rate < 50 %}
+            <span style="color: red;">🔴 Critical (Below 50%)</span>
+          {% elif item.line_rate < 80 %}
+            <span style="color: orange;">🟡 Warning</span>
+          {% else %}
+            <span style="color: green;">🟢 Healthy</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
+<!-- Mermaid Diagram Tab -->
+<div id="Mermaid" class="tabcontent">
+<h2>Python Diagram</h2>
+  <div class ="mermaid-container">
+    {{ mermaid | safe }}
+  </div>
+</div>
+
+<!-- Security Tab -->
+<div id="Security" class="tabcontent">
+  <h2>Security Vulnerabilities</h2>
+
+  {% if security_findings %}
+    <h3>⚠️ Potential security risks detected in configuration files</h3>
+
+    {% for finding in security_findings if finding.vulnerabilities %}
+      <h4>📄 {{ finding.filename }}</h4>
+
+      <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Item</th>
+            <th>Risk Level</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for vulnerability in finding.vulnerabilities %}
+            <tr>
+              <td><b>{{ vulnerability.type }}</b></td>
+              <td><code>{{ vulnerability.item }}</code></td>
+              <td>
+                {{ "🔴" if vulnerability.risk == "CRITICAL" else "🟡" }}
+                {{ vulnerability.risk }}
+              </td>
+              <td>{{ vulnerability.reason or vulnerability.val_preview }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endfor %}
+
+  {% else %}
+    <h3>✅ No immediate security risks (hardcoded secrets or insecure ports) detected.</h3>
+  {% endif %}
+</div>
+
+
+
+<!-- Overview Tab -->
+<div id="Overview" class="tabcontent">
+<h2>Overview</h2>
+<p><strong>Type:</strong> Python Application</p>
+<p><strong>Python Version:</strong> {{ python.python_version }}</p>
+
+<h3>Dependencies</h3>
+<table>
+<tr><th>Package</th><th>Version</th></tr>
+{% for dep in python.dependencies %}
+<tr><td>{{ dep.name }}</td><td>{{ dep.version }}</td></tr>
+{% endfor %}
+</table>
+</div>
+
+<!-- Python Code Tab -->
+<div id="PythonCode" class="tabcontent">
+<h2>Code Documentation</h2>
+{% for file, docs in python.docstrings.items() %}
+<h3>File: {{ file }}</h3>
+<table>
+<tr><th>Type</th><th>Name</th><th>Description</th></tr>
+{% for doc in docs %}
+<tr>
+<td>{{ doc.type }}</td>
+<td>{{ doc.name or '-' }}</td>
+<td>{{ doc.doc | replace('\n', ' ') }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endfor %}
+</div>
+
+<!-- CI/CD Tab -->
+<div id="CI_CD" class="tabcontent">
+<h2>CI/CD Pipeline</h2>
+
+{% if cicd.global_variables %}
+<h3>Global Variables</h3>
+<table>
+<tr><th>Variable</th><th>Value</th></tr>
+{% for key, value in cicd.global_variables.items() %}
+<tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+{% endfor %}
+</table>
+{% endif %}
+
+{% if cicd.jobs %}
+<h3>Jobs</h3>
+<table>
+<tr>
+<th>Job Name</th><th>Stage</th><th>Image</th><th>Scripts</th><th>Runner Tags</th><th>Artifacts</th><th>Runs</th>
+</tr>
+{% for job in cicd.jobs %}
+<tr>
+<td>{{ job.name }}</td>
+<td>{{ job.stage }}</td>
+<td>{{ job.image or '-' }}</td>
+<td>{{ job.script_lines }} command(s)</td>
+<td>{{ job.tags | join(', ') if job.tags else '-' }}</td>
+<td>{% if job.artifacts %}Yes{% else %}-{% endif %}</td>
+<td>{{ job.when }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+</div>
+
+<!-- Docker Tab -->
+<div id="Docker" class="tabcontent">
+<h2>Docker Configuration</h2>
+{% for docker_file in docker %}
+<h3>Dockerfile: {{ docker_file.filename }}</h3>
+<table>
+<tr><th>Key</th><th>Value</th></tr>
+{% for key, value in docker_file.items() %}
+<tr><td>{{ key.replace('_',' ').title() }}</td><td>{{ value }}</td></tr>
+{% endfor %}
+</table>
+{% endfor %}
+</div>
+
+
+
+
+<!-- Tabs JS -->
+<script type="module">
+	import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  
+	mermaid.initialize({ startOnLoad: false });
+  
+	// Expose mermaid globally so non-module scripts can use it
+	window.mermaid = mermaid;
+  </script>
+<script>
+function openTab(evt, tabName) {
+  var i, tabcontent, tablinks;
+
+  // Hide all tab content
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) { tabcontent[i].style.display = "none"; }
+
+  // Remove active class from all tabs
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) { tablinks[i].className = tablinks[i].className.replace(" active", ""); }
+
+  // Show current tab and mark button as active
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+
+
+ // Show current tab and mark button as active
+ const tab = document.getElementById(tabName);
+  tab.style.display = "block";
+  evt.currentTarget.className += " active";
+
+  tab.querySelectorAll('.mermaid').forEach(el => {
+  if (el.dataset.rendered === "true") return;
+
+  const source = el.textContent.trim();
+  if (!source) return;
+
+  window.mermaid.render(
+    'mmd-' + Math.random().toString(36).slice(2),
+    source
+  ).then(({ svg }) => {
+    el.innerHTML = svg;
+    el.dataset.rendered = "true"; // 🔒 lock it
+  }).catch(err => {
+    console.error("Mermaid render failed:", err, source);
+  });
+});
+}
+// Open first tab by default
+document.addEventListener("DOMContentLoaded", function() {
+  document.getElementsByClassName("tablinks")[0].click();
+});
+const now = new Date();
+  document.getElementById("generated-at").textContent =
+    now.toLocaleString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+</script>
+
+</body>
+</html>

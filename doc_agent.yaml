@@ -1,0 +1,26 @@
+name: docs-agent
+goal: >
+  Generate accurate, structured Markdown documentation for the repository.
+
+inputs:
+  - Repository source code
+  - GitLab CI YAML
+  - Dockerfiles
+  - README and comments
+
+outputs:
+  - Markdown documentation in docs/
+  - HTML documentation in docs/html/
+
+
+forbidden_paths:
+  - .git/
+
+
+rules:
+  - Never modify source code
+  - Markdown is the source of truth
+  - HTML is derived from Markdown
+  - Preserve Mermaid diagrams as Mermaid syntax
+  - Validate output before finishing
+

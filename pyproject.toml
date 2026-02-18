@@ -1,0 +1,30 @@
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "semver"
+
+[tool.poetry]
+version = "0.0.0"
+name = "simple-doc-agent"
+description = "An agent to generate documentation from code"
+authors = ["Vidya Krishnan <vidkri@noc.ac.uk>"]
+readme = "README.md"
+
+
+[tool.poetry.dependencies]
+python = "^3.10"
+python-gitlab = "^4.4.0"
+pyyaml = "^6.0"
+tomli = "^2.0.1"
+jinja2 = "^3.1.3"
+gitpython = "^3.1.40"
+dotenv = "^0.9.9"
+python-dotenv = "^1.2.1"
+markdown = "^3.10"
+ruff = "^0.15.1"
+radon = "^6.0.1"
+bandit = "^1.9.3"
