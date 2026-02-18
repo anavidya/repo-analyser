@@ -58,7 +58,7 @@ class DocumentationOrchestrator:
         )
         
         # Agent 5: Generate mermaid code
-        print("🐍 Agent 5: Generating mermaid code...")
+        print("🧜 Agent 5: Generating mermaid code...")
         mermaid_code = self.python_analyzer.generate_mermaid(python_metadata.docstrings)
         metadata = Documentation(
             python=python_metadata,
@@ -77,25 +77,6 @@ class DocumentationOrchestrator:
         # Agent 8: Review the code
         print("🔨Agent 8: Reviewing the python code")
         review_result = self.reviewer.run(files)
-        #-----------------------
-        print("\n" + "=" * 60)
-        print("CODE REVIEW SUMMARY")
-        print("=" * 60)
-        print(f"Total issues: {review_result.total_issues}")
-        print(f"Critical:     {len(review_result.critical)}")
-        print(f"High:         {len(review_result.high)}")
-        print(f"Medium:       {len(review_result.medium)}")
-        print(f"Low:          {len(review_result.low)}")
-
-        if review_result.critical:
-            print("\n🔴 CRITICAL ISSUES:")
-            for issue in review_result.critical:
-                print(f"  {issue.file}:{issue.line} — {issue.message}")
-        if review_result.medium:
-            print("\n🔴 Medium ISSUES:")
-            for issue in review_result.medium:
-                print(f"  {issue.file}:{issue.line} — {issue.message}")
-    #-------------------------
 
         docs, md_docs = self.generator.generate(metadata, findings, test_coverage, review_result)
         
