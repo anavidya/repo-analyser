@@ -50,9 +50,16 @@ class RepositoryTestCoverageFetcher:
 
     def get_latest_tag_coverage(self, project: Project) -> str:
         # 1. Get all tags, sorted by creation (GitLab returns latest first by default)
-        tags = project.tags.list(get_all=False, per_page=50)
+        if hasattr(project, 'tags'):
+        # GitLab
+            tags = project.tags.list(get_all=False, per_page=50)
+            tag_names = [t.name for t in tags]
+        else:
+            # GitHub
+            tags = list(project.get_tags())
+            tag_names = [t.name for t in tags]
         
-        if not tags:
+        if not tag_names:
             return "No tags found"
 
         # 2. Find the latest tag that matches the version pattern vD.D.D

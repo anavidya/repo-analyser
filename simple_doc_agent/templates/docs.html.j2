@@ -10,16 +10,20 @@
 
 <h1>{{ python.project_name }}</h1>
 <p><em>Auto-generated documentation (generated on  <span id="generated-at"></span>)</em></p>
-
+<button class="tablinks" onclick="window.print()" style="background-color: #dc3545; color: white; border-radius: 5px; font-weight: bold;">
+    📄 Export to PDF
+</button>
 <div class="tabs">
   <button class="tablinks" onclick="openTab(event, 'Overview')">Overview</button>
+  <button class="tablinks" onclick="openTab(event, 'Packages')">Packages</button>
+  <button class="tablinks" onclick="openTab(event, 'Security')">Security</button>
+  <button class="tablinks" onclick="openTab(event, 'Code_Review')">Code Review</button>
   <button class="tablinks" onclick="openTab(event, 'PythonCode')">Python Code</button>
   <button class="tablinks" onclick="openTab(event, 'CI_CD')">CI/CD</button>
   <button class="tablinks" onclick="openTab(event, 'Docker')">Docker</button>
   <button class="tablinks" onclick="openTab(event, 'Mermaid')">Diagrams</button>
-  <button class="tablinks" onclick="openTab(event, 'Security')">Security</button>
   <button class="tablinks" onclick="openTab(event, 'Test_Coverage')">Test Coverage</button>
-  <button class="tablinks" onclick="openTab(event, 'Code_Review')">Code Review</button>
+  
 </div>
 
 <div id="Code_Review" class="tabcontent">
@@ -258,11 +262,22 @@
   {% endif %}
 </div>
 
-
-
 <!-- Overview Tab -->
 <div id="Overview" class="tabcontent">
-<h2>Overview</h2>
+<h2>README</h2>
+{% if python.readme_html %}
+    <div class="readme-content">
+      {{ python.readme_html | safe }}
+    </div>
+  {% else %}
+    <p>No README found.</p>
+  {% endif %}
+
+</div>
+
+<!-- Packages Tab -->
+<div id="Packages" class="tabcontent">
+<h2>Packages</h2>
 <p><strong>Type:</strong> Python Application</p>
 <p><strong>Python Version:</strong> {{ python.python_version }}</p>
 
@@ -353,7 +368,8 @@
   
 	// Expose mermaid globally so non-module scripts can use it
 	window.mermaid = mermaid;
-  </script>
+</script>
+
 <script>
 function openTab(evt, tabName) {
   var i, tabcontent, tablinks;
@@ -377,28 +393,29 @@ function openTab(evt, tabName) {
   evt.currentTarget.className += " active";
 
   tab.querySelectorAll('.mermaid').forEach(el => {
-  if (el.dataset.rendered === "true") return;
+	if (el.dataset.rendered === "true") return;
 
-  const source = el.textContent.trim();
-  if (!source) return;
+	const source = el.textContent.trim();
+	if (!source) return;
 
-  window.mermaid.render(
-    'mmd-' + Math.random().toString(36).slice(2),
-    source
-  ).then(({ svg }) => {
-    el.innerHTML = svg;
-    el.dataset.rendered = "true"; // 🔒 lock it
-  }).catch(err => {
-    console.error("Mermaid render failed:", err, source);
-  });
+	window.mermaid.render(
+		'mmd-' + Math.random().toString(36).slice(2),
+		source
+	).then(({ svg }) => {
+		el.innerHTML = svg;
+		el.dataset.rendered = "true"; // 🔒 lock it
+	}).catch(err => {
+		console.error("Mermaid render failed:", err, source);
+	});
 });
 }
 // Open first tab by default
 document.addEventListener("DOMContentLoaded", function() {
-  document.getElementsByClassName("tablinks")[0].click();
+  document.getElementsByClassName("tablinks")[1].click();
 });
+
 const now = new Date();
-  document.getElementById("generated-at").textContent =
+document.getElementById("generated-at").textContent =
     now.toLocaleString(undefined, {
       year: "numeric",
       month: "short",
@@ -407,6 +424,9 @@ const now = new Date();
       minute: "2-digit",
       second: "2-digit"
     });
+
+
+
 </script>
 
 </body>

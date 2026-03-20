@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Dict, List
 
 from gitlab import Gitlab
+import markdown
 import re
 from models import PythonMetadata, Command
 
@@ -18,18 +19,53 @@ class PythonAnalyzer:
         
         # Parse pyproject.toml
         pyproject = tomli.loads(files.get('pyproject.toml', ''))
-        project_name = pyproject.get('tool', {}).get('poetry', {}).get('name', 'unknown')
-        python_version = pyproject.get('tool', {}).get('poetry', {}).get('dependencies', {}).get('python', '3.10+')
-        dependencies = [
-            {
-                "name": name,
-                "version": spec.get("version") if isinstance(spec, dict) else spec,
-                "raw": spec,
-            }
-            for name, spec in pyproject["tool"]["poetry"]["dependencies"].items()
-            if name != "python"
-        ]
-        
+        # PEP 621 / uv / hatch format
+        if 'project' in pyproject:
+            project = pyproject['project']
+            project_name = project.get('name', 'unknown')
+            python_version = project.get('requires-python', '3.10+')
+
+            raw_deps = project.get('dependencies', [])
+            dependencies = []
+            for dep in raw_deps:
+                # deps are strings like "xarray>=2025.11.0"
+                for op in ['>=', '<=', '==', '~=', '!=', '>','<']:
+                    if op in dep:
+                        name, version = dep.split(op, 1)
+                        dependencies.append({
+                            "name": name.strip(),
+                            "version": f"{op}{version.strip()}",
+                            "raw": dep,
+                        })
+                        break
+                else:
+                    dependencies.append({"name": dep.strip(), "version": None, "raw": dep})
+
+            # optional dependencies
+            optional_deps = project.get('optional-dependencies', {})
+            for group, deps in optional_deps.items():
+                for dep in deps:
+                    dependencies.append({"name": dep.strip(), "version": None, "raw": dep, "group": group})
+
+        # Poetry format
+        elif 'tool' in pyproject and 'poetry' in pyproject.get('tool', {}):
+            poetry = pyproject['tool']['poetry']
+            project_name = poetry.get('name', 'unknown')
+            python_version = poetry.get('dependencies', {}).get('python', '3.10+')
+            dependencies = [
+                {
+                    "name": name,
+                    "version": spec.get("version") if isinstance(spec, dict) else spec,
+                    "raw": spec,
+                }
+                for name, spec in poetry.get('dependencies', {}).items()
+                if name != "python"
+            ]
+
+        else:
+            project_name = 'unknown'
+            python_version = '3.10+'
+            dependencies = []
         # Extract CLI commands if Click is used
         commands = []
         if any(dep["name"] == "click" for dep in dependencies):
@@ -42,13 +78,18 @@ class PythonAnalyzer:
             if filepath.endswith('.py'):
                 docstrings = self._extract_docstrings(content, filepath)
                 all_docstrings.update(docstrings)
+
+        readme_raw = self._extract_readme(files)
+        readme_html = markdown.markdown(readme_raw, extensions=["fenced_code", "tables"]) if readme_raw else None
         return PythonMetadata(
             project_name=project_name,
             python_version=python_version,
             dependencies=dependencies,
             commands=commands,
             entry_points=entry_points,
-            docstrings=all_docstrings
+            docstrings=all_docstrings,
+            readme_raw=readme_raw,
+            readme_html=readme_html
         )
     def generate_mermaid(self, all_docstrings: dict) -> str:
         """
@@ -125,4 +166,11 @@ class PythonAnalyzer:
             print(f"⚠ Could not parse {filepath}: {e}")
         
         return docstrings
+
+    def _extract_readme(self, files: Dict[str, str]) -> list[str|None]:
+        for name in files:
+            lower = name.lower()
+            if lower in ("readme.md", "readme.rst", "readme.txt"):
+                return files[name]
+        return None
     

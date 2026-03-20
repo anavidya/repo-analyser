@@ -18,7 +18,9 @@ class PythonMetadata:
     dependencies: List[str]
     commands: List[Command]
     entry_points: List[str]
-    docstrings: Dict[str, List[Dict[str, str]]] = field(default_factory=dict) 
+    docstrings: Dict[str, List[Dict[str, str]]] = field(default_factory=dict)
+    readme_raw: List [str| None] = None
+    readme_html:list[str|None]= None
 
 
 @dataclass

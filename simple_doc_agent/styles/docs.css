@@ -322,3 +322,21 @@
 	  grid-template-columns: 1fr 1fr;
 	}
   }
+
+  @media print {
+	/* Hide the tab buttons and download buttons */
+	.tabs, button, .actions {
+	  display: none !important;
+	}
+  
+	/* Force all tab content to show on the PDF */
+	.tabcontent {
+	  display: block !important;
+	  page-break-after: always; /* Each tab starts on a new page */
+	}
+  
+	body {
+	  background: white;
+	  font-size: 12pt;
+	}
+  }

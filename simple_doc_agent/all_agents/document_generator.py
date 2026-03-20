@@ -3,13 +3,16 @@ from dataclasses import asdict
 from jinja2 import Environment, FileSystemLoader
 import markdown
 from models import Documentation, TestCoverage
+from dataclasses import is_dataclass
+
 
 class DocumentationGenerator:
     """Generates final documentation"""
     
     def __init__(self, templates_dir: str = './templates'):
         self.env = Environment(loader=FileSystemLoader(templates_dir))
-    
+
+
     def generate(self, metadata: Documentation, findings:list, coverage:TestCoverage, review_result:dict) -> str:
         """Generate markdown documentation"""
         
@@ -17,12 +20,12 @@ class DocumentationGenerator:
         template_md = self.env.get_template('docs.md.j2')
         # Convert dataclasses to dicts for template
         context = {
-            'python': asdict(metadata.python),
-            'docker': [asdict(d) for d in metadata.docker],
-            'cicd': asdict(metadata.cicd),
+            'python': metadata.python,
+            'docker': [asdict(d) for d in metadata.docker] if metadata.docker else [],
+            'cicd': asdict(metadata.cicd) if metadata.cicd else {},
             'mermaid': metadata.mermaid,
             'security_findings':findings,
-            'test_coverage':asdict(coverage),
+            'test_coverage':asdict(coverage) if is_dataclass(coverage) else {},
             'review_results': review_result
         }
         
@@ -31,5 +34,5 @@ class DocumentationGenerator:
         # Convert Markdown to HTML
         html_content = markdown.markdown(markdown_html_content, extensions=['tables', "fenced_code"])
         
-        return html_content, markdown_only_content
+        return markdown_html_content, markdown_only_content
 
